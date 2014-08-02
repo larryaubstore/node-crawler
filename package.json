@@ -1,0 +1,45 @@
+{
+    "name": "nodecrawler",
+    "version": "0.0.1",
+    "description": "A 200 hundred lines node.js crawler that follows robots.txt convention. Possibility to store files for tests.",
+    "keywords": [
+        "dom",
+        "javascript",
+        "crawling",
+        "spider",
+        "scraper",
+        "scraping",
+        "jquery"
+    ],
+    "maintainers": [
+        {
+            "name": "Laurence Morin-Daoust",
+            "email": "laurence.morin.daoust@gmail.com"
+        }
+    ],
+    "repository":
+        {
+            "type": "git",
+            "url": "https://github.com/larryaubstore/node-crawler"
+        }
+    ,
+    "dependencies": {
+       "request": "2.21.0",
+       "underscore": "1.3.3",
+       "robots": "git://github.com/larryaubstore/robots.js.git"
+    },
+    "devDependencies": {
+       "jasmine-node": "1.14.3"
+    },
+    "scripts": {
+        "test": "sudo jasmine-node test/spec",
+        "testdebug": "sudo node debug node_modules/jasmine-node/lib/jasmine-node/cli.js test/spec/"
+    },
+    "engines": [
+        "node >=0.6.x"
+    ],
+    "directories": {
+        "lib": "lib"
+    },
+    "main": "./lib/crawler"
+}
