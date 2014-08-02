@@ -9,10 +9,12 @@ A 200 hundred lines node.js crawler that follows robots.txt convention. Possibil
 ## Instantiation
 
 ```javascript
-  var crawler = new Crawler({ 
+
+  var nodecrawler = require('nodecrawler');
+  var crawler = new nodecrawler.Crawler({ 
     loadstatic:     false,
     loadstaticDirectory: "/tmp",
-    checkrobotsTXT: true
+    checkrobotsTXT: true,
     "callback":function(error,result,ignore) {
       if(result && result.body && result.body.length > 0) { 
 
