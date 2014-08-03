@@ -43,16 +43,22 @@ describe("Cache tests", function () {
     });
 
     spyOn(crawler, "loadstatic").andCallFake(function(param1, param2) {
-      expect(param1.uri).toEqual("http://www.google.com");
-      expect(typeof(param2)).toEqual("function");
+      if(crawler.loadstatic.calls.length == 1) {
+        expect(param1.uri).toEqual("http://www.google.com/robots.txt");
+        expect(typeof(param2)).toEqual("function");
+        param2(null,  {body: "EMPTY BODY"});
+      } else if(crawler.loadstatic.calls.length == 2) {
+        expect(param1.uri).toEqual("http://www.google.com");
+        expect(typeof(param2)).toEqual("function");
+        param2(null,  {body: "EMPTY BODY"});
+      }
     });
 
     crawler.queue("http://www.google.com");    
 
-    runs(function () {
-      expect(crawler.loadstatic).toHaveBeenCalled();
-    });
-
+    waitsFor(function () {
+      return crawler.loadstatic.calls.length == 2;
+    }, "Load static never called two times", 2000);
   });
 
 
@@ -72,4 +78,36 @@ describe("Cache tests", function () {
 
   });
 
+  it("test robots.txt", function () {
+    var crawler = new Crawler({
+      "loadstatic": true,
+      "loadstaticDirectory": "test/spec/dummydata/",
+      checkrobotsTXT: true,
+      "callback":function(error,result,$) {
+
+      }
+    });
+
+    spyOn(crawler, "loadstatic").andCallFake(function(opts, callback) {
+
+      if(opts.uri == "http://www.hamelia.com") {
+        callback(null, {body: "<HTML><BODY></BODY></HTML>"});
+      } else if(opts.uri == "http://www.hamelia.com/robots.txt") {
+        callback(null, {body: "#\nUser-agent: *\nAllow: *\n"}); 
+      }    
+    }); 
+
+    spyOn(crawler.robotparser, "setUrl").andCallThrough();
+
+    crawler.queue("http://www.hamelia.com");
+
+
+    waitsFor(function () {
+      return crawler.loadstatic.calls.length == 2;
+    }, "Load static never called two times", 2000);
+
+    runs(function () {
+      expect(crawler.robotparser.setUrl.call.length).toEqual(1);
+    });
+  });
 });

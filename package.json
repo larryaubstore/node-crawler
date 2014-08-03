@@ -28,7 +28,7 @@
        "robots": "git://github.com/larryaubstore/robots.js.git"
     },
     "devDependencies": {
-       "jasmine-node": "1.14.3"
+       "jasmine-node": "1.14.2"
     },
     "scripts": {
         "test": "sudo jasmine-node test/spec",
