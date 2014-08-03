@@ -5,7 +5,6 @@ describe("Cache tests", function () {
   it("function is defined", function () {
 
     var crawler = new Crawler({
-      "maxConnections":1,
       "loadstatic": true,
       "callback":function(error,result,$) {
       }
@@ -19,7 +18,6 @@ describe("Cache tests", function () {
   it("get static filename", function () {
 
     var crawler = new Crawler({
-      "maxConnections":1,
       "loadstatic": true,
       "loadstaticDirectory": "/temp/"
     });
@@ -38,7 +36,6 @@ describe("Cache tests", function () {
   it("test basic workflow", function () {
     var callbackCalled = false;
     var crawler = new Crawler({
-      "maxConnections":1,
       "loadstatic": true,
       "callback":function(error,result,$) {
         callbackCalled = true;
@@ -62,7 +59,6 @@ describe("Cache tests", function () {
   it("test write cache", function () {
 
     var crawler = new Crawler({
-      "maxConnections":1,
       "loadstatic": true,
       "loadstaticDirectory": "test/spec/dummydata/"
     });
