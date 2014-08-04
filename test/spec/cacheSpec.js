@@ -78,7 +78,7 @@ describe("Cache tests", function () {
 
   });
 
-  it("test robots.txt", function () {
+  it("test robots.txt with files already cached", function () {
     var crawler = new Crawler({
       "loadstatic": true,
       "loadstaticDirectory": "test/spec/dummydata/",
@@ -98,6 +98,8 @@ describe("Cache tests", function () {
     }); 
 
     spyOn(crawler.robotparser, "setUrl").andCallThrough();
+    spyOn(crawler.robotparser, "canFetch").andCallThrough();
+
 
     crawler.queue("http://www.hamelia.com");
 
@@ -108,6 +110,98 @@ describe("Cache tests", function () {
 
     runs(function () {
       expect(crawler.robotparser.setUrl.call.length).toEqual(1);
+      expect(crawler.robotparser.canFetch.call.length).toEqual(1);
     });
   });
+
+  it("test robots.txt with files not already cached", function () {
+    var crawler = new Crawler({
+      "loadstatic": true,
+      "loadstaticDirectory": "test/spec/dummydata/",
+      checkrobotsTXT: true,
+      "callback":function(error,result,$) {
+
+      }
+    });
+
+    var mockrequest= {};
+    mockrequest.request = function(item, callback) {
+
+      if(item == "http://www.hamelia.com") {
+        callback(null, {body: "<HTML></HTML>", statusCode: 200});
+      } else if(item == "http://www.hamelia.com/robots.txt") {
+        callback(null, {body: "<EMPTY>", statusCode: 200 }); 
+      }    
+    };
+
+    crawler.externalrequest = mockrequest.request;
+
+    spyOn(crawler, "loadstatic").andCallFake(function(opts, callback) {
+
+      if(opts.uri == "http://www.hamelia.com") {
+        callback();
+      } else if(opts.uri == "http://www.hamelia.com/robots.txt") {
+        callback(); 
+      }    
+    }); 
+
+    spyOn(crawler.robotparser, "setUrl").andCallThrough();
+    spyOn(crawler.robotparser, "canFetch").andCallThrough();
+    spyOn(crawler, "writeStaticCache").andCallFake(function(uri, response, callback) {
+      callback(null);
+    });
+
+
+    crawler.queue("http://www.hamelia.com");
+
+
+    waitsFor(function () {
+      return crawler.loadstatic.calls.length == 2;
+    }, "Load static never called two times", 2000);
+
+
+    var timeout = false;
+    runs(function() {
+      setTimeout(function() {
+        timeout = true;
+      }, 1000);
+    });
+   
+    waitsFor(function () {
+      return timeout == true;
+    }, "Timeout never true"); 
+
+    runs(function () {
+      expect(crawler.robotparser.setUrl.call.length).toEqual(1);
+      expect(crawler.robotparser.canFetch.call.length).toEqual(1);
+    });
+  });
+
+  it("test crawler name", function () {
+
+     var crawler = new Crawler({
+      "loadstatic": true,
+      "loadstaticDirectory": "test/spec/dummydata/",
+      checkrobotsTXT: true,
+      "callback":function(error,result,$) {
+
+      }
+    });
+
+    expect(crawler.robotparser.options.headers.userAgent).toEqual('Cribellatae');
+
+    crawler = new Crawler({
+      "loadstatic": true,
+      "loadstaticDirectory": "test/spec/dummydata/",
+      checkrobotsTXT: true,
+      "callback":function(error,result,$) {
+
+      },
+      name: 'alternatename'
+    });
+
+    expect(crawler.robotparser.options.headers.userAgent).toEqual('alternatename');
+  });
+
+
 });
