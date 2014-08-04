@@ -32,3 +32,4 @@ A 200 hundred lines node.js crawler that follows robots.txt convention. Possibil
   * **loadstatic**: If url had been crawled before, the crawler will load it from hard disk.
   * **loadstaticDirectory**: The directory where to store crawled urls.
   * **checkrobotsTXT**: if true, the crawler will follow the 'robots.txt' convention. 
+  * **name**: Crawler name.
