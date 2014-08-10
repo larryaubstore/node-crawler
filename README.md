@@ -10,7 +10,7 @@ A 200 hundred lines node.js crawler that follows robots.txt convention. Possibil
 
 ```javascript
 
-  var nodecrawler = require('nodecrawler');
+  var nodecrawler = require('node-crawler');
   var crawler = new nodecrawler.Crawler({ 
     loadstatic:     false,
     loadstaticDirectory: "/tmp",
