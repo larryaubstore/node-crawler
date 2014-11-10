@@ -1,4 +1,5 @@
 var Crawler = require("../../lib/crawler.js").Crawler;
+var request = require("../../lib/request");
 
 describe("Cache tests", function () {
 
@@ -203,5 +204,19 @@ describe("Cache tests", function () {
     expect(crawler.robotparser.options.headers.userAgent).toEqual('alternatename');
   });
 
+  it("true crawler test", function () {
+    expect(request).toBeDefined();
 
+    var isCalled = false;
+
+    request("http://localhost:3000", function(err, response, body) {
+      if(err == null && body) {
+        isCalled = true;
+      }
+    });
+
+    waitsFor(function () {
+      return isCalled == true;
+    }, "Request never called", 2000);
+  });
 });
