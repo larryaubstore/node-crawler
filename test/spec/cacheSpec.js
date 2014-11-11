@@ -20,7 +20,7 @@ describe("Cache tests", function () {
 
     var crawler = new Crawler({
       "loadstatic": true,
-      "loadstaticDirectory": "/temp/"
+      "loadstaticDirectory": "/tmp/"
     });
 
     expect(crawler.getStaticFilename).not.toBeUndefined();
@@ -30,7 +30,7 @@ describe("Cache tests", function () {
 
     var sha256 = crawler.sha256(opts.uri);
     var staticFilename = crawler.getStaticFilename(opts);
-    expect(staticFilename).toEqual("/temp/" + sha256 + ".data");
+    expect(staticFilename).toEqual("/tmp/" + sha256 + ".data");
 
   });
 
@@ -47,19 +47,25 @@ describe("Cache tests", function () {
       if(crawler.loadstatic.calls.length == 1) {
         expect(param1.uri).toEqual("http://www.google.com/robots.txt");
         expect(typeof(param2)).toEqual("function");
-        param2(null,  {body: "EMPTY BODY"});
+        param2(null,  {body: "EMPTY BODY", statusCode: 200});
       } else if(crawler.loadstatic.calls.length == 2) {
         expect(param1.uri).toEqual("http://www.google.com");
         expect(typeof(param2)).toEqual("function");
-        param2(null,  {body: "EMPTY BODY"});
+        param2(null,  {body: "EMPTY BODY", statusCode: 200});
       }
     });
 
-    crawler.queue("http://www.google.com");    
+
+    crawler.queue("http://www.google.com",function(err, resp) {
+    
+    });    
+
 
     waitsFor(function () {
       return crawler.loadstatic.calls.length == 2;
     }, "Load static never called two times", 2000);
+
+
   });
 
 
@@ -83,10 +89,7 @@ describe("Cache tests", function () {
     var crawler = new Crawler({
       "loadstatic": true,
       "loadstaticDirectory": "test/spec/dummydata/",
-      checkrobotsTXT: true,
-      "callback":function(error,result,$) {
-
-      }
+      checkrobotsTXT: true
     });
 
     spyOn(crawler, "loadstatic").andCallFake(function(opts, callback) {
@@ -102,7 +105,9 @@ describe("Cache tests", function () {
     spyOn(crawler.robotparser, "canFetch").andCallThrough();
 
 
-    crawler.queue("http://www.hamelia.com");
+    crawler.queue("http://www.hamelia.com", function(err, response) {
+
+    });
 
 
     waitsFor(function () {
@@ -119,10 +124,7 @@ describe("Cache tests", function () {
     var crawler = new Crawler({
       "loadstatic": true,
       "loadstaticDirectory": "test/spec/dummydata/",
-      checkrobotsTXT: true,
-      "callback":function(error,result,$) {
-
-      }
+      checkrobotsTXT: true
     });
 
     var mockrequest= {};
@@ -153,7 +155,9 @@ describe("Cache tests", function () {
     });
 
 
-    crawler.queue("http://www.hamelia.com");
+    crawler.queue("http://www.hamelia.com", function (err, response) {
+
+    });
 
 
     waitsFor(function () {
@@ -178,31 +182,6 @@ describe("Cache tests", function () {
     });
   });
 
-  it("test crawler name", function () {
-
-     var crawler = new Crawler({
-      "loadstatic": true,
-      "loadstaticDirectory": "test/spec/dummydata/",
-      checkrobotsTXT: true,
-      "callback":function(error,result,$) {
-
-      }
-    });
-
-    expect(crawler.robotparser.options.headers.userAgent).toEqual('Cribellatae');
-
-    crawler = new Crawler({
-      "loadstatic": true,
-      "loadstaticDirectory": "test/spec/dummydata/",
-      checkrobotsTXT: true,
-      "callback":function(error,result,$) {
-
-      },
-      name: 'alternatename'
-    });
-
-    expect(crawler.robotparser.options.headers.userAgent).toEqual('alternatename');
-  });
 
   it("true crawler test", function () {
     expect(request).toBeDefined();
