@@ -3,6 +3,10 @@ var request = require("../../lib/request");
 
 describe("Cache tests", function () {
 
+  var mockrequest = function (url, callback) {
+    callback({body: "", statusCode: 200});
+  };
+
   it("function is defined", function () {
 
     var crawler = new Crawler({
@@ -38,9 +42,7 @@ describe("Cache tests", function () {
     var callbackCalled = false;
     var crawler = new Crawler({
       "loadstatic": true,
-      "callback":function(error,result,$) {
-        callbackCalled = true;
-      }
+      request: mockrequest
     });
 
     spyOn(crawler, "loadstatic").andCallFake(function(param1, param2) {
@@ -62,7 +64,7 @@ describe("Cache tests", function () {
 
 
     waitsFor(function () {
-      return crawler.loadstatic.calls.length == 2;
+      return crawler.loadstatic.calls.length == 1;
     }, "Load static never called two times", 2000);
 
 
@@ -111,7 +113,7 @@ describe("Cache tests", function () {
 
 
     waitsFor(function () {
-      return crawler.loadstatic.calls.length == 2;
+      return crawler.loadstatic.calls.length == 1;
     }, "Load static never called two times", 2000);
 
     runs(function () {
@@ -137,7 +139,6 @@ describe("Cache tests", function () {
       }    
     };
 
-    crawler.externalrequest = mockrequest.request;
 
     spyOn(crawler, "loadstatic").andCallFake(function(opts, callback) {
 
@@ -161,7 +162,7 @@ describe("Cache tests", function () {
 
 
     waitsFor(function () {
-      return crawler.loadstatic.calls.length == 2;
+      return crawler.loadstatic.calls.length == 1;
     }, "Load static never called two times", 2000);
 
 
