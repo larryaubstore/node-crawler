@@ -4,11 +4,12 @@ var request = require("../../lib/request");
 describe("Cache tests", function () {
 
   var mockrequest = function (url, callback) {
-    callback({body: "", statusCode: 200});
+    callback(null, {body: "#\nUser-agent: *\nAllow: *\n", statusCode: 200}, "#\nUser-agent: *\nAllow: *\n");
   };
 
   it("function is defined", function () {
 
+    console.log("TEST ==> function is defined");
     var crawler = new Crawler({
       "loadstatic": true,
       "callback":function(error,result,$) {
@@ -21,6 +22,7 @@ describe("Cache tests", function () {
 
 
   it("get static filename", function () {
+    console.log("TEST ==> get static filename");
 
     var crawler = new Crawler({
       "loadstatic": true,
@@ -39,6 +41,7 @@ describe("Cache tests", function () {
   });
 
   it("test basic workflow", function () {
+    console.log("TEST ==> test basic workflow");
     var callbackCalled = false;
     var crawler = new Crawler({
       "loadstatic": true,
@@ -64,7 +67,7 @@ describe("Cache tests", function () {
 
 
     waitsFor(function () {
-      return crawler.loadstatic.calls.length == 1;
+      return crawler.loadstatic.calls.length == 2
     }, "Load static never called two times", 2000);
 
 
@@ -72,7 +75,7 @@ describe("Cache tests", function () {
 
 
   it("test write cache", function () {
-
+    console.log("TEST ==> test write cache");
     var crawler = new Crawler({
       "loadstatic": true,
       "loadstaticDirectory": "test/spec/dummydata/"
@@ -88,10 +91,13 @@ describe("Cache tests", function () {
   });
 
   it("test robots.txt with files already cached", function () {
+    
+    console.log("TEST ==> test robots.txt with files already cached");
     var crawler = new Crawler({
       "loadstatic": true,
       "loadstaticDirectory": "test/spec/dummydata/",
-      checkrobotsTXT: true
+      checkrobotsTXT: true,
+      request: mockrequest
     });
 
     spyOn(crawler, "loadstatic").andCallFake(function(opts, callback) {
@@ -113,7 +119,7 @@ describe("Cache tests", function () {
 
 
     waitsFor(function () {
-      return crawler.loadstatic.calls.length == 1;
+      return crawler.loadstatic.calls.length == 2;
     }, "Load static never called two times", 2000);
 
     runs(function () {
@@ -123,22 +129,13 @@ describe("Cache tests", function () {
   });
 
   it("test robots.txt with files not already cached", function () {
+    console.log("TEST ==> test robots.txt with files not already cached");
     var crawler = new Crawler({
       "loadstatic": true,
       "loadstaticDirectory": "test/spec/dummydata/",
-      checkrobotsTXT: true
+      checkrobotsTXT: true,
+      request: mockrequest
     });
-
-    var mockrequest= {};
-    mockrequest.request = function(item, callback) {
-
-      if(item == "http://www.hamelia.com") {
-        callback(null, {body: "<HTML></HTML>", statusCode: 200});
-      } else if(item == "http://www.hamelia.com/robots.txt") {
-        callback(null, {body: "<EMPTY>", statusCode: 200 }); 
-      }    
-    };
-
 
     spyOn(crawler, "loadstatic").andCallFake(function(opts, callback) {
 
@@ -162,7 +159,7 @@ describe("Cache tests", function () {
 
 
     waitsFor(function () {
-      return crawler.loadstatic.calls.length == 1;
+      return crawler.loadstatic.calls.length == 2;
     }, "Load static never called two times", 2000);
 
 
@@ -185,6 +182,7 @@ describe("Cache tests", function () {
 
 
   it("true crawler test", function () {
+    console.log("TEST ==> true crawler test");
     expect(request).toBeDefined();
 
     var isCalled = false;
