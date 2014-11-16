@@ -12,6 +12,7 @@ describe("Cache tests", function () {
     console.log("TEST ==> function is defined");
     var crawler = new Crawler({
       "loadstatic": true,
+      "datestamp": "2014-10-2-20",
       "callback":function(error,result,$) {
       }
     });
@@ -26,7 +27,9 @@ describe("Cache tests", function () {
 
     var crawler = new Crawler({
       "loadstatic": true,
-      "loadstaticDirectory": "/tmp/"
+      "datestamp": "2014-10-2-20",
+      "loadstaticDirectory": "/tmp/",
+      "finalstaticdirectory": "/tmp/"
     });
 
     expect(crawler.getStaticFilename).not.toBeUndefined();
@@ -44,6 +47,7 @@ describe("Cache tests", function () {
     console.log("TEST ==> test basic workflow");
     var callbackCalled = false;
     var crawler = new Crawler({
+      "datestamp": "2014-10-2-20",
       "loadstatic": true,
       request: mockrequest
     });
@@ -77,8 +81,10 @@ describe("Cache tests", function () {
   it("test write cache", function () {
     console.log("TEST ==> test write cache");
     var crawler = new Crawler({
+      "datestamp": "2014-10-2-20",
       "loadstatic": true,
-      "loadstaticDirectory": "test/spec/dummydata/"
+      "loadstaticDirectory": "test/spec/dummydata/",
+      "finalstaticdirectory": "test/spec/dummydata/"
     });
 
     spyOn(crawler, "writeStaticCacheAsync").andCallFake(function () {});
@@ -94,10 +100,15 @@ describe("Cache tests", function () {
     
     console.log("TEST ==> test robots.txt with files already cached");
     var crawler = new Crawler({
+      "datestamp": "2014-10-2-20",
       "loadstatic": true,
       "loadstaticDirectory": "test/spec/dummydata/",
       checkrobotsTXT: true,
       request: mockrequest
+    });
+
+    spyOn(crawler, "createIfNotExists").andCallFake(function (name, datestamp, callback) {
+      callback();
     });
 
     spyOn(crawler, "loadstatic").andCallFake(function(opts, callback) {
@@ -131,10 +142,15 @@ describe("Cache tests", function () {
   it("test robots.txt with files not already cached", function () {
     console.log("TEST ==> test robots.txt with files not already cached");
     var crawler = new Crawler({
+      "datestamp": "2014-10-2-20",
       "loadstatic": true,
       "loadstaticDirectory": "test/spec/dummydata/",
       checkrobotsTXT: true,
       request: mockrequest
+    });
+
+    spyOn(crawler, "createIfNotExists").andCallFake(function (name, datestamp, callback) {
+      callback();
     });
 
     spyOn(crawler, "loadstatic").andCallFake(function(opts, callback) {
